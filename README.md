@@ -36,30 +36,56 @@
 </head>
 <body class="bg-hkjc-gray min-h-screen">
 
-    <!-- 頂部導航欄 -->
-    <header class="bg-hkjc-blue text-white shadow-lg border-b-4 border-hkjc-gold sticky top-0 z-40">
-        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-3xl">🐕</span>
-                <div>
-                    <h1 class="text-xl font-black tracking-wider text-hkjc-lightGold">賽狗會</h1>
-                    <p class="text-xs font-bold uppercase tracking-widest text-gray-300">Doggg Club</p>
+    <!-- 🌟 頂部導航與置頂帳戶區 (Sticky 區塊) -->
+    <div class="sticky top-0 z-40 shadow-md w-full">
+        <!-- 頂部導航欄 -->
+        <header class="bg-hkjc-blue text-white border-b-4 border-hkjc-gold relative z-40">
+            <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-3xl">🐕</span>
+                    <div>
+                        <h1 class="text-xl font-black tracking-wider text-hkjc-lightGold">賽狗會</h1>
+                        <p class="text-xs font-bold uppercase tracking-widest text-gray-300">Doggg Club</p>
+                    </div>
+                </div>
+                <!-- 當前選擇帳戶及餘額 -->
+                <div class="flex flex-col items-end">
+                    <div class="flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span class="text-[9px] text-gray-300">已連線</span>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-hkjc-dark px-3 py-1 rounded-full border border-hkjc-gold/30">
+                        <span id="header-user-name" class="font-bold text-sm text-white">讀取中...</span>
+                        <span class="text-gray-400">|</span>
+                        <span id="header-user-balance" class="font-black text-hkjc-lightGold text-sm">$0</span>
+                    </div>
                 </div>
             </div>
-            <!-- 當前選擇帳戶及餘額 -->
-            <div class="flex flex-col items-end">
-                <div class="flex items-center gap-1">
-                    <span class="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-[9px] text-gray-300">已連線</span>
+        </header>
+
+        <!-- 全域帳戶管理 (置頂區) -->
+        <div class="bg-white px-4 py-3 border-b-4 border-hkjc-blue relative z-30">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-700 flex items-center gap-1">
+                            <span>👤</span> 點擊切換你的帳戶：
+                        </h2>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="new-username-input" type="text" placeholder="輸入新朋友名字" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-hkjc-blue w-full sm:w-auto">
+                        <button onclick="addNewUser()" class="bg-hkjc-blue hover:bg-hkjc-dark text-white text-sm font-bold px-4 py-1.5 rounded-lg transition shadow shrink-0">
+                            新增
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2 bg-hkjc-dark px-3 py-1 rounded-full border border-hkjc-gold/30">
-                    <span id="header-user-name" class="font-bold text-sm text-white">讀取中...</span>
-                    <span class="text-gray-400">|</span>
-                    <span id="header-user-balance" class="font-black text-hkjc-lightGold text-sm">$0</span>
+                <div id="users-list-container" class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar items-center">
+                    <!-- 動態載入 -->
                 </div>
+                <p class="text-[10px] text-gray-400 mt-1">※ 點擊名字旁邊的「✏️」可以隨時改名</p>
             </div>
         </div>
-    </header>
+    </div>
 
     <!-- 雲端同步加載遮罩 -->
     <div id="loading-overlay" class="fixed inset-0 bg-hkjc-dark/80 backdrop-blur-sm z-[60] flex flex-col items-center justify-center text-white">
@@ -69,12 +95,12 @@
     </div>
 
     <!-- 自定義 Toast 通知 -->
-    <div id="toast" class="hidden fixed top-24 left-1/2 transform -translate-x-1/2 z-[70] bg-gray-900/95 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 border border-hkjc-gold w-[90%] max-w-sm">
+    <div id="toast" class="hidden fixed top-32 left-1/2 transform -translate-x-1/2 z-[70] bg-gray-900/95 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-all duration-300 border border-hkjc-gold w-[90%] max-w-sm">
         <span id="toast-icon" class="text-xl">📢</span>
         <span id="toast-message" class="font-bold text-sm"></span>
     </div>
 
-    <!-- 🌟 自訂通用確認對話框 (取代 confirm) -->
+    <!-- 🌟 自訂通用確認對話框 -->
     <div id="confirm-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[80] flex items-center justify-center px-4 transition-opacity">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform scale-100">
             <div class="p-5 text-center">
@@ -158,27 +184,6 @@
     <!-- 主內容區 -->
     <main class="max-w-4xl mx-auto px-4 mt-5">
         
-        <!-- 全域帳戶管理 -->
-        <section class="bg-white rounded-xl shadow-md p-4 mb-6 border-t-4 border-hkjc-blue">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h2 class="text-sm font-bold text-gray-700 flex items-center gap-1">
-                        <span>👤</span> 點擊切換為你的帳戶：
-                    </h2>
-                    <p class="text-[10px] text-gray-400 mt-0.5">※ 點擊你的名字旁邊的「✏️」可以隨時改名</p>
-                </div>
-                <div class="flex gap-2">
-                    <input id="new-username-input" type="text" placeholder="輸入新朋友名字" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-hkjc-blue w-full sm:w-auto">
-                    <button onclick="addNewUser()" class="bg-hkjc-blue hover:bg-hkjc-dark text-white text-sm font-bold px-4 py-1.5 rounded-lg transition shadow shrink-0">
-                        新增
-                    </button>
-                </div>
-            </div>
-            <div id="users-list-container" class="flex gap-2 mt-3 overflow-x-auto pb-2 no-scrollbar items-center">
-                <!-- 動態載入 -->
-            </div>
-        </section>
-
         <!-- ==================== 分頁 1: 投注面板 ==================== -->
         <section id="section-betting" class="space-y-6 block">
             <div class="bg-white rounded-xl shadow-md p-5 border-t-4 border-hkjc-blue">
@@ -194,8 +199,8 @@
             </div>
         </section>
 
-        <!-- ==================== 分頁 2: 記錄與排行榜 ==================== -->
-        <section id="section-records" class="space-y-6 hidden">
+        <!-- ==================== 分頁 2: 排行榜 ==================== -->
+        <section id="section-leaderboard" class="space-y-6 hidden">
             <!-- 排行榜 -->
             <div class="bg-white rounded-xl shadow-md p-5 border-t-4 border-hkjc-gold relative overflow-hidden">
                 <div class="absolute -right-6 -top-6 text-7xl text-yellow-100 opacity-40 select-none">🏆</div>
@@ -206,6 +211,10 @@
                     <!-- 動態載入 -->
                 </div>
             </div>
+        </section>
+
+        <!-- ==================== 分頁 3: 紀錄 ==================== -->
+        <section id="section-history" class="space-y-6 hidden">
             <!-- 投注紀錄 -->
             <div class="bg-white rounded-xl shadow-md p-5 border-t-4 border-gray-400 overflow-hidden">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2 mb-4">
@@ -229,7 +238,7 @@
             </div>
         </section>
 
-        <!-- ==================== 分頁 3: 莊家管理 ==================== -->
+        <!-- ==================== 分頁 4: 莊家管理 ==================== -->
         <section id="section-admin" class="space-y-6 hidden">
             
             <!-- 賽事管理與結算中心 -->
@@ -295,16 +304,20 @@
 
     </main>
 
-    <!-- 底部固定導航列 -->
+    <!-- 底部固定導航列 (4個按鈕) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-40 pb-safe">
         <div class="max-w-4xl mx-auto flex">
             <button onclick="switchTab('betting')" id="nav-betting" class="flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-hkjc-blue bg-blue-50 text-hkjc-blue transition-all">
                 <span class="text-xl leading-none">🎟️</span>
                 <span class="text-[11px] font-bold">投注面板</span>
             </button>
-            <button onclick="switchTab('records')" id="nav-records" class="flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-transparent text-gray-400 hover:bg-gray-50 transition-all">
+            <button onclick="switchTab('leaderboard')" id="nav-leaderboard" class="flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-transparent text-gray-400 hover:bg-gray-50 transition-all">
                 <span class="text-xl leading-none">🏆</span>
-                <span class="text-[11px] font-bold">記錄與排行榜</span>
+                <span class="text-[11px] font-bold">排行榜</span>
+            </button>
+            <button onclick="switchTab('history')" id="nav-history" class="flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-transparent text-gray-400 hover:bg-gray-50 transition-all">
+                <span class="text-xl leading-none">📋</span>
+                <span class="text-[11px] font-bold">紀錄</span>
             </button>
             <button onclick="switchTab('admin')" id="nav-admin" class="flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-transparent text-gray-400 hover:bg-gray-50 transition-all">
                 <span class="text-xl leading-none">⚙️</span>
@@ -313,13 +326,13 @@
         </div>
     </nav>
 
-    <!-- 載入 Firebase SDK (已注入您的 Firebase 配置) -->
+    <!-- 載入 Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 這是你專屬的 Firebase 配置
+        // 你的 Firebase 配置
         const firebaseConfig = {
             apiKey: "AIzaSyBGOXw8BMq9DKe6Q_iBCCY0vHWfT-GoypA",
             authDomain: "doggyclub-8130c.firebaseapp.com",
@@ -357,7 +370,7 @@
         let state = { users: [], currentUser: null, matches: [], bets: [] };
         let isInitialized = false;
 
-        // 全局狀態管理物件 (暴露給非 module script 使用)
+        // 全局狀態管理物件
         window.GameSystem = {
             getState: () => state,
             updateCloud: async () => {
@@ -1007,9 +1020,9 @@
             }
         };
 
-        // 🌟 分頁切換
+        // 🌟 4個分頁切換
         function switchTab(tabId) {
-            ['betting', 'records', 'admin'].forEach(id => {
+            ['betting', 'leaderboard', 'history', 'admin'].forEach(id => {
                 document.getElementById(`section-${id}`).classList.add('hidden');
                 document.getElementById(`section-${id}`).classList.remove('block');
                 document.getElementById(`nav-${id}`).className = "flex-1 py-3 flex flex-col items-center justify-center gap-1 border-t-4 border-transparent text-gray-400 hover:bg-gray-50 transition-all";
